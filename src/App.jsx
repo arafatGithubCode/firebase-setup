@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import Auth from "./components/Auth";
 
 import { db } from "./config/firebase";
-import { getDocs, collection, addDoc } from "firebase/firestore";
+import {
+  getDocs,
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 
 export default function App() {
   const [movieList, setMovieList] = useState([]);
@@ -21,6 +27,18 @@ export default function App() {
         id: doc.id,
       }));
       setMovieList(filterData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteMovie = async (id) => {
+    try {
+      const movieDoc = doc(db, "movies", id);
+      await deleteDoc(movieDoc);
+      setMovieList((prevMovieList) =>
+        prevMovieList.filter((movie) => movie.id !== id)
+      );
     } catch (error) {
       console.error(error);
     }
@@ -90,6 +108,7 @@ export default function App() {
           </h3>
           <p>Release Date: {movie.releaseDate}</p>
           <p>Watch: {movie.watched ? "Seen" : "Unseen"}</p>
+          <button onClick={() => deleteMovie(movie.id)}>Delete</button>
         </article>
       ))}
     </>
