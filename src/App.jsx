@@ -8,6 +8,7 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 
 export default function App() {
@@ -16,6 +17,8 @@ export default function App() {
   const [movieTitle, setMovieTitle] = useState("");
   const [releaseDate, setReleaseDate] = useState(0);
   const [isWatch, setIsWatch] = useState(true);
+
+  const [updatedTitle, setUpdatedTitle] = useState("");
 
   const movieCollectionRef = collection(db, "movies");
 
@@ -42,6 +45,17 @@ export default function App() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const updateMovieTitle = async (id) => {
+    const movieDoc = doc(db, "movies", id);
+    await updateDoc(movieDoc, { title: updatedTitle });
+
+    setMovieList((prevMovieList) =>
+      prevMovieList.map((movie) =>
+        movie.id === id ? { ...movie, title: updatedTitle } : movie
+      )
+    );
   };
 
   useEffect(() => {
@@ -108,6 +122,17 @@ export default function App() {
           </h3>
           <p>Release Date: {movie.releaseDate}</p>
           <p>Watch: {movie.watched ? "Seen" : "Unseen"}</p>
+          <label htmlFor="updateTitle">Update Movie Title: </label>
+          <input
+            type="text"
+            name="updateTitle"
+            id="updateTitle"
+            placeholder="update title"
+            value={updatedTitle}
+            onChange={(e) => setUpdatedTitle(e.target.value)}
+          />
+          <button onClick={() => updateMovieTitle(movie.id)}>Update</button>{" "}
+          <br />
           <button onClick={() => deleteMovie(movie.id)}>Delete</button>
         </article>
       ))}
