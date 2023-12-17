@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Auth from "./components/Auth";
 
-import { db } from "./config/firebase";
+import { auth, db } from "./config/firebase";
 import {
   getDocs,
   collection,
@@ -68,6 +68,7 @@ export default function App() {
         title: movieTitle,
         releaseDate: releaseDate,
         watched: isWatch,
+        userId: auth?.currentUser?.uid,
       });
       getMovieList();
       setMovieTitle("");
